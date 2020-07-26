@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'card.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -9,21 +11,42 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  List <Quotes> quoteList = [
-    Quotes(text: 'There was no where to go but \neverywhere, so just keep on \n rolling with the    stars.', author: 'Jack Kerouac'),
-    Quotes(
-      text: 'The toad does not run in \nthe daytime for nothing', author: 'Chinua Achebe'),
-  Quotes(text: 'A hungry man too dey vex', author: 'Ikenna Umeh'),
-  Quotes(text: 'Wetin concern naked \nman with pocket', author: 'Unknown'),
-    Quotes(text: 'Wetin no go see for \ngate', author: 'Unknown'),
-    Quotes(text: 'This life no balance', author: 'Unknown'),];
+//  List <Quotes> quoteList = [
+//    Quotes(text: 'There was no where to go but \neverywhere, so just keep on \n rolling with the    stars.', author: 'Jack Kerouac'),
+//    Quotes(
+//      text: 'The toad does not run in \nthe daytime for nothing', author: 'Chinua Achebe'),
+//  Quotes(text: 'A hungry man too dey vex', author: 'Ikenna Umeh'),
+//  Quotes(text: 'Wetin concern naked \nman with pocket', author: 'Unknown'),
+//    Quotes(text: 'Wetin no go see for \ngate', author: 'Unknown'),
+//    Quotes(text: 'This life no balance', author: 'Unknown'),];
 
+    void getData() async {
+       http.Response response = await http.get('https://type.fit/api/quotes');
+       if(response.statusCode == 200){
+         String data = response.body;
+         listOfItems = jsonDecode(data);
+         String text = jsonDecode(data)[0]['text'];
+         String author = jsonDecode(data)[0]['author'];
+         print(text);
+         print(author);
+       } else {
+         print(response.statusCode);
+       }
 
+    }
 
+    List listOfItems = [];
+
+    @override
+  void initState() {
+    // TODO: implement initState
+      getData();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey,
+      backgroundColor: Colors.blueGrey,
       body: SingleChildScrollView(
         child: SafeArea(
           child: Padding(padding: EdgeInsets.all(10),
@@ -53,10 +76,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: ListView.builder(
 
                         shrinkWrap: true,
-                         itemCount: quoteList.length,
+                         itemCount:listOfItems.length,
                         itemBuilder: (context, index){
-                           return DefaultCard(text: quoteList[index].text,
-                             author: quoteList[index].author,);
+                           return DefaultCard(text: '${listOfItems[index]["text"]}',//quoteList[index].text,
+                             author: '${listOfItems[index]["author"]}',
+                           );
+
                         },
                       ),
                     ),
@@ -74,11 +99,17 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 
+//class Quotes{
+//  final String text;
+//  final String author;
+//
+//  Quotes({this.text, this.author});
+//
+//}
+
 class Quotes{
   final String text;
   final String author;
 
   Quotes({this.text, this.author});
-
 }
-
