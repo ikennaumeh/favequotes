@@ -11,24 +11,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-//  List <Quotes> quoteList = [
-//    Quotes(text: 'There was no where to go but \neverywhere, so just keep on \n rolling with the    stars.', author: 'Jack Kerouac'),
-//    Quotes(
-//      text: 'The toad does not run in \nthe daytime for nothing', author: 'Chinua Achebe'),
-//  Quotes(text: 'A hungry man too dey vex', author: 'Ikenna Umeh'),
-//  Quotes(text: 'Wetin concern naked \nman with pocket', author: 'Unknown'),
-//    Quotes(text: 'Wetin no go see for \ngate', author: 'Unknown'),
-//    Quotes(text: 'This life no balance', author: 'Unknown'),];
 
     void getData() async {
        http.Response response = await http.get('https://type.fit/api/quotes');
        if(response.statusCode == 200){
          String data = response.body;
-         listOfItems = jsonDecode(data);
-         String text = jsonDecode(data)[0]['text'];
-         String author = jsonDecode(data)[0]['author'];
-         print(text);
-         print(author);
+         setState(() {
+           listOfItems = jsonDecode(data);
+         });
+//         String text = jsonDecode(data)[0]['text'];
+//         String author = jsonDecode(data)[0]['author'];
+//         print(text);
+//         print(author);
        } else {
          print(response.statusCode);
        }
@@ -61,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Padding(
                     padding: const EdgeInsets.only(left: 40.0, top: 45.0, right: 20.0, bottom: 20.0,),
                     child: Text(
-                      'Your favourites',
+                      'Quotes',
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 30.0,
@@ -78,9 +72,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         shrinkWrap: true,
                          itemCount:listOfItems.length,
                         itemBuilder: (context, index){
-                           return DefaultCard(text: '${listOfItems[index]["text"]}',//quoteList[index].text,
-                             author: '${listOfItems[index]["author"]}',
-                           );
+                          if(listOfItems == null){
+                            return CircularProgressIndicator();
+                          } else {
+                            return DefaultCard(text: '${listOfItems[index]["text"]}',
+                              author: '${listOfItems[index]["author"]}',
+                            );
+                          }
 
                         },
                       ),
@@ -99,17 +97,3 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 
-//class Quotes{
-//  final String text;
-//  final String author;
-//
-//  Quotes({this.text, this.author});
-//
-//}
-
-class Quotes{
-  final String text;
-  final String author;
-
-  Quotes({this.text, this.author});
-}
