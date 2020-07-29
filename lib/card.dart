@@ -18,9 +18,12 @@ class DefaultCard extends StatefulWidget {
 
 class _DefaultCardState extends State<DefaultCard> {
   bool setColor = false;
+  bool addedFav = false;
 
   @override
   Widget build(BuildContext context) {
+
+
     return Card(
 
       elevation: 5.0,
@@ -49,7 +52,7 @@ class _DefaultCardState extends State<DefaultCard> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    '- ${widget.author}',
+                     widget.author == null ? 'Unknown' : widget.author,
                     style: TextStyle(
                       fontSize: 15.0,
                     ),
@@ -87,8 +90,22 @@ class _DefaultCardState extends State<DefaultCard> {
                   children: <Widget>[
                     SizedBox(width: 45.0,),
                     IconButton(
-                      icon: Icon(Icons.favorite_border),
-                      onPressed: (){},
+                      icon: Icon( addedFav ? Icons.favorite : Icons.favorite_border, color: addedFav ? Colors.red : Colors.black,),
+                      onPressed: (){
+                        setState(() {
+                          addedFav = !addedFav;
+                        });
+                        final addedtoFav = SnackBar(
+                          backgroundColor: Colors.black,
+                          content: Text( addedFav ? 'Successfully Added To Favourites' : 'Removed From Favourites',
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            color: Colors.white,
+                          ),),
+                        );
+                        Scaffold.of(context)
+                        .showSnackBar(addedtoFav);
+                      },
 
 
                     ),
@@ -96,7 +113,10 @@ class _DefaultCardState extends State<DefaultCard> {
                     IconButton(
                       icon: Icon(Icons.share,),
                       onPressed: (){
-                        Share.share('Share favourites quotes');
+                      Share.share(
+                        widget.text,
+                        subject: 'Read A Quote Today',
+                      );
                       },
                     ),
                   ],

@@ -4,6 +4,59 @@ import 'card.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+
+class SplashScreen extends StatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+
+
+  @override
+  void initState() {
+    Duration time = Duration(seconds: 5);
+
+    Future.delayed(time, (){
+      Navigator.pushNamed(context, '/homescreen');
+    });
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.blueGrey,
+      body: Center(
+        child: RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: 'fave',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 35.0,
+                ),
+              ),
+              TextSpan(
+                text: 'QUOTES',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.yellowAccent,
+                  fontSize: 40.0,
+
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -12,24 +65,22 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
 
 
-    void getData() async {
+    Future<dynamic> getData() async {
        http.Response response = await http.get('https://type.fit/api/quotes');
        if(response.statusCode == 200){
          String data = response.body;
          setState(() {
            listOfItems = jsonDecode(data);
          });
-//         String text = jsonDecode(data)[0]['text'];
-//         String author = jsonDecode(data)[0]['author'];
-//         print(text);
-//         print(author);
+
        } else {
          print(response.statusCode);
        }
 
+
     }
 
-    List listOfItems = [];
+    List listOfItems;
 
     @override
   void initState() {
@@ -41,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blueGrey,
+
       body: SingleChildScrollView(
         child: SafeArea(
           child: Padding(padding: EdgeInsets.all(10),
@@ -65,23 +117,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Container(
-                      height: MediaQuery.of(context).size.height - 120.0,
-
-                      child: ListView.builder(
-
+                      height: MediaQuery.of(context).size.height - 150.0,
+                      child: listOfItems != null ? ListView.builder(
                         shrinkWrap: true,
-                         itemCount:listOfItems.length,
+                        itemCount:listOfItems.length,
                         itemBuilder: (context, index){
-                          if(listOfItems == null){
-                            return CircularProgressIndicator();
-                          } else {
-                            return DefaultCard(text: '${listOfItems[index]["text"]}',
-                              author: '${listOfItems[index]["author"]}',
-                            );
-                          }
-
+                          return DefaultCard(text: '${listOfItems[index]["text"]}',
+                            author: '${listOfItems[index]["author"]}',
+                          );
                         },
-                      ),
+                      )
+                          : Center(child: CircularProgressIndicator(),)
                     ),
 
 
